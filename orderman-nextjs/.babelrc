@@ -1,0 +1,7 @@
+{
+    "presets": ["next/babel"],
+    "plugins": [
+        "babel-plugin-inline-import",
+        ["import",{ "libraryName": "antd-mobile", "style": "css" }]
+    ]
+}

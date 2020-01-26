@@ -1,0 +1,13 @@
+package pers.simon.orderman.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Component;
+
+@Mapper
+@Component
+public interface UserMapper {
+    @Select("SELECT user_name FROM users WHERE user_id = #{userId}")
+    String getUserNameById(String userId);
+}
