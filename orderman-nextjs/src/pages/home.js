@@ -9,16 +9,5 @@ const Home = props => (
     </div>
 );
 
-Home.getInitialProps = async function() {
-    const res = await fetch('http://127.0.0.1:8081/api/userdata?userId=001', {
-        method:'GET',
-    });
-    const data = await res.json();
-    console.log(data)
-
-    return {
-        userName:data.data.userName 
-    }
-}
 
 export default Home;

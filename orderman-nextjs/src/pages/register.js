@@ -1,7 +1,7 @@
 import Router from "next/router";
 import fetch from 'isomorphic-unfetch';
 
-class Login extends React.Component {
+class Register extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -17,7 +17,7 @@ class Login extends React.Component {
     async handleLogin() {
         var data = { 'userName': this.state.userName, 'password': this.state.password }
         console.log(JSON.stringify(data))
-        fetch("http://127.0.0.1:8081/api/login", {
+        fetch("http://127.0.0.1:8081/api/register", {
             method: 'POST',
             body: JSON.stringify(data),
             credentials: "include",
@@ -54,14 +54,14 @@ class Login extends React.Component {
             <div>
                 <div className="flex-container">
                     <div className="form-content">
-                        <h2>登 录</h2>
+                        <h2>注 册</h2>
                         <form onSubmit={this.handleLogin}>
                             <input type="text" value={this.state.userName} onChange={this.handleUserNameChange} placeholder="用户名" />
                             <input type="password" value={this.state.password} onChange={this.handlePasswordChange} placeholder="密码" />
-                            <input type="submit" value="登 录" />
+                            <input type="submit" value="注 册" />
                         </form>
                         <div className="form-footer">
-                            <a className="underline-hover" onClick={() => Router.push('/register')}>加入我们</a>
+                            <a className="underline-hover" onClick={() => Router.push('/login')}>已有帐户</a>
                         </div>
                     </div>
 
@@ -169,5 +169,5 @@ class Login extends React.Component {
 
 };
 
-export default Login
+export default Register 
 
