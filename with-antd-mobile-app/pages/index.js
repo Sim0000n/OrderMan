@@ -13,7 +13,7 @@ class MyTabBar extends React.Component {
     };
 
     async logout() {
-        fetch(`http://127.0.0.1:8081/api/logout`, {
+        fetch(`http://47.93.231.181:8081/api/logout`, {
             method: 'GET',
             credentials: 'include',
             mode:'cors'
@@ -95,7 +95,7 @@ class MyTabBar extends React.Component {
     }
 
     async componentDidMount() {
-        const res = await fetch("http://127.0.0.1:8081/api/login", {
+        const res = await fetch("http://47.93.231.181:8081/api/login", {
             method: "GET",
             credentials: 'include',
             mode: 'cors'

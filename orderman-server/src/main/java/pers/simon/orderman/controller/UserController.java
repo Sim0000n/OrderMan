@@ -20,7 +20,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
     @GetMapping("/api/login")
     ResponseWrapper isLogin(HttpSession session) {
         Object userName = session.getAttribute("userName");
@@ -34,7 +34,7 @@ public class UserController {
         return new ResponseWrapper(OK, loginResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
     @PostMapping("/api/login")
     ResponseWrapper login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         LoginResponse loginResponse = userService.login(loginRequest);
@@ -43,7 +43,7 @@ public class UserController {
         return new ResponseWrapper(OK, loginResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
     @PostMapping("/api/register")
     ResponseWrapper register(@RequestBody RegisterRequest registerRequest, HttpSession session) {
         RegisterResponse registerResponse = userService.register(registerRequest);
@@ -52,7 +52,7 @@ public class UserController {
         return new ResponseWrapper(OK, registerResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
     @GetMapping("/api/logout")
     void logout(HttpSession session) {
         session.removeAttribute("userName");
