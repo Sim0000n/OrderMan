@@ -29,6 +29,11 @@ public class UserServiceImpl implements UserService {
     }
 
     public RegisterResponse register(RegisterRequest registerRequest) {
-
+        if(userMapper.getPasswordByUserName(registerRequest.getUserName())!=null) {
+            return new RegisterResponse(1);
+        } else {
+            userMapper.addNewUser(registerRequest.getUserName(), registerRequest.getPassword());
+            return new RegisterResponse(0);
+        }
     }
 }
