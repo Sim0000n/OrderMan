@@ -19,7 +19,7 @@ class Login extends React.Component {
     async handleLogin() {
         var data = { 'userName': this.state.userName, 'password': this.state.password }
         console.log(JSON.stringify(data))
-        fetch("http://47.93.231.181:8081/api/login", {
+        fetch("http://127.0.0.1:8081/api/login", {
             method: 'POST',
             body: JSON.stringify(data),
             credentials: "include",
@@ -46,7 +46,7 @@ class Login extends React.Component {
     }
 
     async componentDidMount() {
-        const res = await fetch("http://47.93.231.181:8081/api/login", {
+        const res = await fetch("http://127.0.0.1:8081/api/login", {
             method: "GET",
             credentials: 'include',
             mode: 'cors'
