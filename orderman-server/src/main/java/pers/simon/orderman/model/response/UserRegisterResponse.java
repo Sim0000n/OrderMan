@@ -1,10 +1,10 @@
 package pers.simon.orderman.model.response;
 
-public class RegisterResponse {
+public class UserRegisterResponse {
     //0: register success, 1: same user name
     private int status;
 
-    public RegisterResponse(int status) {
+    public UserRegisterResponse(int status) {
         this.status = status;
     }
 

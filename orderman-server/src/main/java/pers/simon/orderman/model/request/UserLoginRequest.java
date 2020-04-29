@@ -1,15 +1,15 @@
 package pers.simon.orderman.model.request;
 
-public class LoginRequest {
+public class UserLoginRequest {
     private String userName;
     private String password;
 
-    public LoginRequest(String userName, String password) {
+    public UserLoginRequest(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }
 
-    public LoginRequest() {
+    public UserLoginRequest() {
     }
 
     public String getUserName() {

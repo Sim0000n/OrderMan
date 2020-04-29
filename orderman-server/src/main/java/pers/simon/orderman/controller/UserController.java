@@ -3,10 +3,10 @@ package pers.simon.orderman.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import pers.simon.orderman.model.request.LoginRequest;
-import pers.simon.orderman.model.request.RegisterRequest;
-import pers.simon.orderman.model.response.LoginResponse;
-import pers.simon.orderman.model.response.RegisterResponse;
+import pers.simon.orderman.model.entity.Cart;
+import pers.simon.orderman.model.request.*;
+import pers.simon.orderman.model.response.UserLoginResponse;
+import pers.simon.orderman.model.response.UserRegisterResponse;
 import pers.simon.orderman.service.UserService;
 import pers.simon.orderman.utils.ResponseWrapper;
 
@@ -20,42 +20,89 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @GetMapping("/api/login")
     ResponseWrapper isLogin(HttpSession session) {
         Object userName = session.getAttribute("userName");
-        LoginResponse loginResponse = new LoginResponse();
+        UserLoginResponse userLoginResponse = new UserLoginResponse();
         if(userName != null) {
-            loginResponse.setStatus(1);
-            loginResponse.setUserName((String)userName);
+            userLoginResponse.setStatus(1);
+            userLoginResponse.setUserName((String)userName);
         } else {
-            loginResponse.setStatus(0);
+            userLoginResponse.setStatus(0);
         }
-        return new ResponseWrapper(OK, loginResponse);
+        return new ResponseWrapper(OK, userLoginResponse);
     }
 
-    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @PostMapping("/api/login")
-    ResponseWrapper login(@RequestBody LoginRequest loginRequest, HttpSession session) {
-        LoginResponse loginResponse = userService.login(loginRequest);
-        if(loginResponse.getStatus() == 1)
-            session.setAttribute("userName", loginResponse.getUserName());
-        return new ResponseWrapper(OK, loginResponse);
+    ResponseWrapper login(@RequestBody UserLoginRequest userLoginRequest, HttpSession session) {
+        UserLoginResponse userLoginResponse = userService.login(userLoginRequest);
+        if(userLoginResponse.getStatus() == 1)
+            session.setAttribute("userName", userLoginResponse.getUserName());
+        return new ResponseWrapper(OK, userLoginResponse);
     }
 
-    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @PostMapping("/api/register")
-    ResponseWrapper register(@RequestBody RegisterRequest registerRequest, HttpSession session) {
-        RegisterResponse registerResponse = userService.register(registerRequest);
-        if(registerResponse.getStatus() == 0)
-            session.setAttribute("userName", registerRequest.getUserName());
-        return new ResponseWrapper(OK, registerResponse);
+    ResponseWrapper register(@RequestBody UserRegisterRequest userRegisterRequest, HttpSession session) {
+        UserRegisterResponse userRegisterResponse = userService.register(userRegisterRequest);
+        if(userRegisterResponse.getStatus() == 0)
+            session.setAttribute("userName", userRegisterRequest.getUserName());
+        return new ResponseWrapper(OK, userRegisterResponse);
     }
 
-    @CrossOrigin(origins = "http://47.93.231.181", allowCredentials = "true")
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @GetMapping("/api/logout")
     void logout(HttpSession session) {
         session.removeAttribute("userName");
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/getSellers")
+    ResponseWrapper getSellers(@RequestBody GetSellersRequest getSellersRequest) {
+        return new ResponseWrapper(OK, userService.getSellers(getSellersRequest));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/getCommodities")
+    ResponseWrapper getCommodities(@RequestBody GetCommoditesRequest getCommoditesRequest) {
+        return new ResponseWrapper(OK, userService.getCommodities(getCommoditesRequest)) ;
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/getSellerInfo")
+    ResponseWrapper getSellerInfo(@RequestBody GetSellerInfoRequest getSellerInfoRequest) {
+        return new ResponseWrapper(OK, userService.getSellerInfo(getSellerInfoRequest));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/newOrder")
+    void addNewOrder(@RequestBody NewOrderRequest newOrderRequest, HttpSession session) {
+        userService.addNewOrder(newOrderRequest, (String)session.getAttribute("userName"));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/getOrders")
+    ResponseWrapper getOrders(@RequestBody GetOrdersRequest getOrdersRequest, HttpSession session) {
+        return new ResponseWrapper(OK, userService.getOrders(getOrdersRequest, (String)session.getAttribute("userName")));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/getOrderInfo")
+    ResponseWrapper getOrderInfo(@RequestBody GetOrderInfoRequest getOrderInfoRequest) {
+        return new ResponseWrapper(OK, userService.getOrderInfo(getOrderInfoRequest));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/changePassword")
+    ResponseWrapper changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, HttpSession session) {
+        return new ResponseWrapper(OK, userService.changePassword(changePasswordRequest, (String)session.getAttribute("userName")));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/getSellersByKeyword")
+    ResponseWrapper getSellersByKeyword(@RequestBody GetSellersByKeywordRequest getSellersByKeywordRequest) {
+        return new ResponseWrapper(OK, userService.getSellersByKeyword(getSellersByKeywordRequest));
+    }
 }

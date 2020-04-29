@@ -1,7 +1,7 @@
 import Router from "next/router";
 import fetch from 'isomorphic-unfetch';
 import { WhiteSpace, Modal } from "antd-mobile";
-import '../public/css/login.css'
+import '../../public/css/login.css'
 
 const alert = Modal.alert;
 
@@ -9,19 +9,19 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userName: '',
+            sellerId: '',
             password: '',
             loginStatus: 0,
         }
         this.handleLogin = this.handleLogin.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.handleUserNameChange = this.handleUserNameChange.bind(this);
+        this.handlesellerIdChange = this.handlesellerIdChange.bind(this);
     };
 
     async handleLogin() {
-        var data = { 'userName': this.state.userName, 'password': this.state.password }
+        var data = { 'sellerId': this.state.sellerId, 'password': this.state.password }
         console.log(JSON.stringify(data))
-        fetch("http://localhost:8081/api/login", {
+        fetch("http://localhost:8081/api/seller/login", {
             method: 'POST',
             body: JSON.stringify(data),
             credentials: "include",
@@ -32,15 +32,15 @@ class Login extends React.Component {
         }).then((res) => res.json())
             .then((result) => {
                 this.setState({
-                    userName: result.data.userName,
+                    sellerId: result.data.sellerId,
                     loginStatus: result.data.status
                 })
             })
         event.preventDefault();
     }
 
-    handleUserNameChange(event) {
-        this.setState({ userName: event.target.value })
+    handlesellerIdChange(event) {
+        this.setState({ sellerId: event.target.value })
     }
 
     handlePasswordChange(event) {
@@ -48,7 +48,7 @@ class Login extends React.Component {
     }
 
     async componentDidMount() {
-        const res = await fetch("http://localhost:8081/api/login", {
+        const res = await fetch("http://localhost:8081/api/seller/login", {
             method: "GET",
             credentials: 'include',
             mode: 'cors'
@@ -63,19 +63,19 @@ class Login extends React.Component {
     render() {
         switch (this.state.loginStatus) {
             case 1:
-                Router.push('/error', '/');
+                Router.push('/error', '/seller');
                 break;
             case 2:
                 alert('登录失败', '用户名不存在，请重新输入', [
-                    { text: 'Ok', onPress: () => console.log('username not exist')}
+                    { text: 'Ok', onPress: () => console.log('sellerId not exist')}
                 ]);
-                this.setState({loginStatus: 0, password: '', userName:''});
+                this.setState({loginStatus: 0, password: '', sellerId:''});
                 break;
             case 3:
                 alert('登录失败', '密码错误，请重新输入', [
                     { text: 'Ok', onPress: () => console.log('password not correct')}
                 ])
-                this.setState({loginStatus: 0, password: '', userName:''});
+                this.setState({loginStatus: 0, password: '', sellerId:''});
                 break;
             default:
                 break;
@@ -87,16 +87,15 @@ class Login extends React.Component {
                     <div className="form-content">
                         <h2>登 录</h2>
                         <form onSubmit={this.handleLogin}>
-                            <input type="text" value={this.state.userName} onChange={this.handleUserNameChange} placeholder="用户名" />
+                            <input type="text" value={this.state.sellerId} onChange={this.handlesellerIdChange} placeholder="用户名" />
                             <input type="password" value={this.state.password} onChange={this.handlePasswordChange} placeholder="密码" />
                             <input type="submit" value="登 录" />
                         </form>
                         <WhiteSpace />
                         <div className="form-footer">
-                            <a className="underline-hover" onClick={() => Router.push('/register')}>加入我们</a>
+                            <a className="underline-hover" onClick={() => Router.push('/seller/register')}>加入我们</a>
                         </div>
                     </div>
-
                 </div>
                 <style jsx global>{`
                     html {
@@ -112,5 +111,4 @@ class Login extends React.Component {
 
 };
 
-export default Login
-
+export default Login;

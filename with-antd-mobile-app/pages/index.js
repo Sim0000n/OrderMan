@@ -1,8 +1,13 @@
 import { TabBar, Button, WhiteSpace } from 'antd-mobile'
 import Router from 'next/router'
 import fetch from 'isomorphic-unfetch'
+import MySearchBar from '../components/MySearchBar'
+import '../public/css/index.css'
+import SellerList from '../components/SellerList'
+import OrderList from '../components/OrderList'
+import MyList from '../components/MyList'
 
-class MyTabBar extends React.Component {
+class Index extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -13,38 +18,25 @@ class MyTabBar extends React.Component {
     };
 
     async logout() {
-        fetch(`http://127.0.0.1:8081/api/logout`, {
+        fetch(`http://localhost:8081/api/logout`, {
             method: 'GET',
             credentials: 'include',
-            mode:'cors'
+            mode: 'cors'
         }).then(console.log('logout'))
-        .then(() => this.setState({
-            loginStatus: 0
-        }))
+            .then(() => this.setState({
+                loginStatus: 0
+            }))
     }
     notLoginPage() {
         return (
             <div>
                 <div className='notlogin-wrapper'>
                     <WhiteSpace />
-                    <h1>美好的一餐从登陆开始</h1>
+                    <h1 className="notlogin-slogan">美好的一餐从登陆开始</h1>
                     <Button type='primary' onClick={() => Router.push('/login')}>点击登录</Button>
                     <WhiteSpace />
                     <Button type='primary' onClick={() => Router.push('/register')}>没有帐户？加入我们</Button>
                 </div>
-                <style jsx>{`
-                    h1 {
-                        text-align: center;
-                        font-size: 38px;
-                    }
-                    .notlogin-wrapper {
-                        padding: 20px;
-                        align-items: center;
-                        padding-top: 30px;
-                    } 
-                `}
-                </style>
-
             </div>
         )
     }
@@ -54,12 +46,17 @@ class MyTabBar extends React.Component {
             return this.notLoginPage();
         }
         return (
-            <div style={{
-                marginTop: 20
-            }}>
-                <h1>Home Page</h1>
-                <a>{this.state.loginStatus}</a>
-                <a>{this.state.userName}</a>
+            <div>
+                <div style={{
+                    // marginTop: 20
+                }}>
+                    {/* <h1 className="orderman-slogan">OrderMan</h1> */}
+                    <div>
+                        <MySearchBar />
+                        {/* <MyCarousel /> */}
+                    </div>
+                    <SellerList />
+                </div>
             </div>
         );
 
@@ -69,8 +66,13 @@ class MyTabBar extends React.Component {
         if (this.state.loginStatus == 0) {
             return this.notLoginPage();
         }
+        return (
+            <div>
+                <h1 className="my-order-h1">我的订单</h1>
+                <OrderList />
+            </div>
+        )
     }
-
     renderMy() {
         if (this.state.loginStatus == 0) {
             return this.notLoginPage();
@@ -78,24 +80,18 @@ class MyTabBar extends React.Component {
         return (
             <div>
                 <div className="my-wrapper">
-                    <h1>你好,{this.state.userName}</h1>
-                    <Button type='warning' onClick={() => this.logout()}>退出登录</Button>
+                    <h1 className="hello-slogan">你好, {this.state.userName}</h1>
                 </div>
-                <style jsx>{`
-                    h1 {
-                        font-size: 40px;
-                    }
-                    .my-wrapper{
-                        padding: 20px;
-                    } 
-                `}
-                </style>
+                <MyList />
+                <div className="exit-button">
+                    <Button  type='warning' onClick={() => this.logout()}>退出登录</Button>
+                </div>
             </div>
         )
     }
 
     async componentDidMount() {
-        const res = await fetch("http://127.0.0.1:8081/api/login", {
+        const res = await fetch("http://localhost:8081/api/login", {
             method: "GET",
             credentials: 'include',
             mode: 'cors'
@@ -114,7 +110,7 @@ class MyTabBar extends React.Component {
         return (
             <div style={{
                 position: "fixed",
-                //                bottom: '0px',
+                // bottom: '0px',
                 height: '100%',
                 width: '100%',
                 top: 0
@@ -123,9 +119,10 @@ class MyTabBar extends React.Component {
                     unselectedTintColor="#949494"
                     tintColor="#33A3F4"
                     barTintColor="white"
+                    tabBarPosition="bottom"
                 >
                     <TabBar.Item
-                        title="Home"
+                        title="订餐"
                         key="Home"
                         icon={<div
                             style={{
@@ -148,7 +145,7 @@ class MyTabBar extends React.Component {
                     </TabBar.Item>
 
                     <TabBar.Item
-                        title="Order"
+                        title="订单"
                         key="Order"
                         icon={<div
                             style={{
@@ -169,7 +166,7 @@ class MyTabBar extends React.Component {
                         {this.renderOrder()}
                     </TabBar.Item>
                     <TabBar.Item
-                        title="My"
+                        title="我的"
                         key="My"
                         icon={<div
                             style={{
@@ -197,4 +194,4 @@ class MyTabBar extends React.Component {
 }
 
 
-export default MyTabBar;
+export default Index;

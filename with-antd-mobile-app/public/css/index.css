@@ -1,0 +1,36 @@
+.notlogin-slogan {
+    text-align: center;
+    font-size: 38px;
+}
+
+.notlogin-wrapper {
+    padding: 20px;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.orderman-slogan {
+    padding: 10px;
+    font-size: 40px;
+    color: #56baed;
+}
+
+.hello-slogan {
+    padding: 10px;
+    font-size: 40px;
+}
+
+/* .my-wrapper {
+    padding: 20px
+} */
+
+.my-order-h1 {
+    padding: 2px;
+    font-size: 20px;
+    color: #56baed;
+    text-align: center;
+}
+
+.exit-button {
+    padding: 20px;
+}

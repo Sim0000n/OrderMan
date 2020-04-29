@@ -1,13 +1,13 @@
 package pers.simon.orderman.model.request;
 
-public class RegisterRequest {
+public class UserRegisterRequest {
     private String userName;
     private String password;
 
-    public RegisterRequest() {
+    public UserRegisterRequest() {
     }
 
-    public RegisterRequest(String userName, String password) {
+    public UserRegisterRequest(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }

@@ -1,14 +1,15 @@
 import Router from "next/router";
 import fetch from 'isomorphic-unfetch';
 import { WhiteSpace, Modal } from "antd-mobile";
-
+import '../../public/css/login.css'
 const alert = Modal.alert;
 
 class Register extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userName: '',
+            sellerId: '',
+            sellerName: '',
             password: '',
             password2: '',
             registerStatus: 2,
@@ -16,8 +17,9 @@ class Register extends React.Component {
         }
         this.handleRegister = this.handleRegister.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.handleUserNameChange = this.handleUserNameChange.bind(this);
+        this.handleSellerIdChange = this.handleSellerIdChange.bind(this);
         this.handlePassword2Change = this.handlePassword2Change.bind(this);
+        this.handleSellerNameChange = this.handleSellerNameChange.bind(this)
     };
 
     async componentDidMount() {
@@ -36,20 +38,24 @@ class Register extends React.Component {
 
     handleRegister() {
         console.log('submit')
-        if (this.state.userName.length < 6 || this.state.password.length < 6) {
-            this.setState({ registerResult: 2, userName: '', password: '', password2: '' })
-            event.preventDefault();
+        if (this.state.sellerId.length < 6 || this.state.password.length < 6) {
+            this.setState({ registerResult: 2, sellerId: '', password: '', password2: '' })
         } else if (this.state.password2 !== this.state.password) {
-            this.setState({ registerResult: 3, userName: '', password: '', password2: '' })
-            event.preventDefault();
+            this.setState({ registerResult: 3, sellerId: '', password: '', password2: '' })
+        } else if(this.state.sellerName.length == 0) {
+            this.setState({ registerResult: 4 })
         } else {
             console.log("register")
             this.register();
         }
+        event.preventDefault();
     }
 
     async register() {
-        var data = { 'userName': this.state.userName, 'password': this.state.password }
+        var data = { 
+            'sellerId': this.state.sellerId, 
+            'password': this.state.password, 
+            'sellerName': this.state.sellerName }
         console.log(JSON.stringify(data))
         fetch("http://localhost:8081/api/seller/register", {
             method: 'POST',
@@ -69,8 +75,8 @@ class Register extends React.Component {
 
     }
 
-    handleUserNameChange(event) {
-        this.setState({ userName: event.target.value })
+    handleSellerIdChange(event) {
+        this.setState({ sellerId: event.target.value })
     }
 
     handlePasswordChange(event) {
@@ -81,11 +87,15 @@ class Register extends React.Component {
         this.setState({ password2: event.target.value })
     }
 
+    handleSellerNameChange(event) {
+        this.setState({ sellerName: event.target.value })
+    }
+
     handleRegisterResult() {
         switch (this.state.registerResult) {
             case 1:
                 alert('注册失败', '用户名已存在', [
-                    { text: 'Ok', onPress: () => console.log('username exist') }
+                    { text: 'Ok', onPress: () => console.log('sellerId exist') }
                 ]);
                 this.setState({ registerResult: 0 });
                 break;
@@ -101,6 +111,12 @@ class Register extends React.Component {
                 ])
                 this.setState({ registerResult: 0 });
                 break;
+            case 4: 
+                alert('商户名不能为空', [
+                    { text: 'Ok', onPress: () => console.log('sellerName null') }
+                ])
+                this.setState({ registerResult: 0 })
+                break;
             default:
                 break;
         }
@@ -108,7 +124,7 @@ class Register extends React.Component {
 
     render() {
         if (this.state.registerStatus == '0') {
-            Router.push('/error', '/')
+            Router.push('/seller')
         }
         else if (this.state.registerStatus == '1') {
             this.state.registerStatus = 2;
@@ -122,14 +138,15 @@ class Register extends React.Component {
                     <div className="form-content">
                         <h2>注 册</h2>
                         <form onSubmit={this.handleRegister}>
-                            <input type="text" value={this.state.userName} onChange={this.handleUserNameChange} placeholder="用户名" />
+                            <input type="text" value={this.state.sellerId} onChange={this.handleSellerIdChange} placeholder="商户ID" />
+                            <input type="text" value={this.state.sellerName} onChange={this.handleSellerNameChange} placeholder="商户名" />
                             <input type="password" value={this.state.password} onChange={this.handlePasswordChange} placeholder="密码" />
                             <input type="password" value={this.state.password2} onChange={this.handlePassword2Change} placeholder="再次输入密码" />
                             <input type="submit" value="注 册" />
                         </form>
                         <WhiteSpace />
                         <div className="form-footer">
-                            <a className="underline-hover" onClick={() => Router.push('/login')}>已有帐户</a>
+                            <a className="underline-hover" onClick={() => Router.push('/seller/login')}>已有帐户</a>
                         </div>
                     </div>
 
@@ -149,3 +166,4 @@ class Register extends React.Component {
 };
 
 export default Register
+

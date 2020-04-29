@@ -1,6 +1,6 @@
 package pers.simon.orderman.model.response;
 
-public class LoginResponse {
+public class UserLoginResponse {
 
     private String userName;
     //0: not login, 1: login success, 2: user name !exist, 3: wrong password
@@ -10,12 +10,12 @@ public class LoginResponse {
         return status;
     }
 
-    public LoginResponse(String userName, int status) {
+    public UserLoginResponse(String userName, int status) {
         this.userName = userName;
         this.status = status;
     }
 
-    public LoginResponse() {
+    public UserLoginResponse() {
     }
 
     public void setStatus(int status) {
