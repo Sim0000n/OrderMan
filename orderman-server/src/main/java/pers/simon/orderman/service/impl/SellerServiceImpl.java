@@ -9,10 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pers.simon.orderman.mapper.SellerMapper;
 import pers.simon.orderman.model.entity.Order;
 import pers.simon.orderman.model.request.*;
-import pers.simon.orderman.model.response.ChangeSellerPasswordResponse;
-import pers.simon.orderman.model.response.GetOrdersResponse;
-import pers.simon.orderman.model.response.SellerLoginResponse;
-import pers.simon.orderman.model.response.SellerRegisterResponse;
+import pers.simon.orderman.model.response.*;
 import pers.simon.orderman.service.SellerService;
 import pers.simon.orderman.utils.MyUuid;
 import java.io.File;
@@ -145,5 +142,13 @@ public class SellerServiceImpl implements SellerService {
 
     public void changeOrderStatus(ChangeOrderStatusRequest changeOrderStatusRequest) {
         sellerMapper.changeOrderStatus(changeOrderStatusRequest.getOrderStatus(), changeOrderStatusRequest.getOrderId());
+    }
+
+    public SellerLoginResponse getSellerInfo(String sellerUuid) {
+        return sellerMapper.getSellerInfo(sellerUuid);
+    }
+
+    public GetCommodityInfoResponse getCommodityInfo(String commodityId) {
+        return sellerMapper.getCommodityInfo(commodityId);
     }
 }

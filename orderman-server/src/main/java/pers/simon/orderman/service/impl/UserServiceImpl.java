@@ -51,6 +51,14 @@ public class UserServiceImpl implements UserService {
         return getSellersResponse;
     }
 
+    public GetSellersResponse getSellersOrderBySales(GetSellersRequest getSellersRequest) {
+        int offset = getSellersRequest.getSeq() * getSellersRequest.getNum();
+        List<Seller> sellers = userMapper.getSellersOrderBySales(offset, getSellersRequest.getNum());
+        GetSellersResponse getSellersResponse = new GetSellersResponse();
+        getSellersResponse.setSellers(sellers);
+        return getSellersResponse;
+    }
+
     public GetCommoditiesResponse getCommodities(GetCommoditesRequest getCommoditesRequest) {
         int offset = getCommoditesRequest.getSeq() * getCommoditesRequest.getNum();
         List<Commodity> commodities = userMapper.getCommodities(getCommoditesRequest.getSellerUuid(), offset, getCommoditesRequest.getNum());
@@ -64,9 +72,10 @@ public class UserServiceImpl implements UserService {
         return getSellerInfoResponse;
     }
 
-    public void addNewOrder(NewOrderRequest newOrderRequest, String userName) {
+    public NewOrderResponse addNewOrder(NewOrderRequest newOrderRequest, String userName) {
         StringBuilder stringBuilder = new StringBuilder();
         float price = 0;
+        String orderId = MyUuid.getUuid();
         for(Cart cart: newOrderRequest.getCartList()) {
             float currPrice = userMapper.getPriceByCommodityId(cart.getCommodityId());
             currPrice = currPrice * cart.getNum();
@@ -77,13 +86,20 @@ public class UserServiceImpl implements UserService {
             stringBuilder.append(",");
         }
         userMapper.addNewOrder(
-                MyUuid.getUuid(),
+                orderId,
                 1,
                 stringBuilder.toString(),
                 price,
                 newOrderRequest.getSellerUuid(),
                 userName
         );
+        for(Cart cart: newOrderRequest.getCartList()) {
+            userMapper.addCommoditySales(cart.getCommodityId(),cart.getNum());
+        }
+        userMapper.addSellerSales(newOrderRequest.getSellerUuid());
+        NewOrderResponse newOrderResponse = new NewOrderResponse();
+        newOrderResponse.setOrderId(orderId);
+        return newOrderResponse;
     }
 
     public GetOrdersResponse getOrders(GetOrdersRequest getOrdersRequest, String userName) {
@@ -137,4 +153,6 @@ public class UserServiceImpl implements UserService {
         getSellersResponse.setSellers(sellers);
         return getSellersResponse;
     }
+
+
 }

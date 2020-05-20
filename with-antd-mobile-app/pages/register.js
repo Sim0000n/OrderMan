@@ -1,6 +1,7 @@
 import Router from "next/router";
 import fetch from 'isomorphic-unfetch';
 import { WhiteSpace, Modal } from "antd-mobile";
+import '../public/css/login.css'
 
 const alert = Modal.alert;
 
@@ -21,7 +22,7 @@ class Register extends React.Component {
     };
 
     async componentDidMount() {
-        const res = await fetch("http://localhost:8081/api/seller/login", {
+        const res = await fetch("http://localhost:8081/api/login", {
             method: "GET",
             credentials: 'include',
             mode: 'cors'
@@ -51,7 +52,7 @@ class Register extends React.Component {
     async register() {
         var data = { 'userName': this.state.userName, 'password': this.state.password }
         console.log(JSON.stringify(data))
-        fetch("http://localhost:8081/api/seller/register", {
+        fetch("http://localhost:8081/api/register", {
             method: 'POST',
             body: JSON.stringify(data),
             credentials: "include",

@@ -13,9 +13,10 @@ public interface UserService {
     public GetSellersResponse getSellers(GetSellersRequest getSellersRequest);
     public GetCommoditiesResponse getCommodities(GetCommoditesRequest getCommoditesRequest);
     public GetSellerInfoResponse getSellerInfo(GetSellerInfoRequest getSellerInfoRequest);
-    public void addNewOrder(NewOrderRequest newOrderRequest, String userName);
+    public NewOrderResponse addNewOrder(NewOrderRequest newOrderRequest, String userName);
     public GetOrdersResponse getOrders(GetOrdersRequest getOrdersRequest, String userName);
     public GetOrderInfoResponse getOrderInfo(GetOrderInfoRequest getOrderInfoRequest);
     public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, String userName);
     public GetSellersResponse getSellersByKeyword(GetSellersByKeywordRequest getSellersByKeywordRequest);
+    public GetSellersResponse getSellersOrderBySales(GetSellersRequest getSellersRequest);
 }

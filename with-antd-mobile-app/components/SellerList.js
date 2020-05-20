@@ -6,7 +6,7 @@ import '../public/css/SellerList.css'
 import Link from 'next/link'
 import CardBody from 'antd-mobile/lib/card/CardBody';
 
-const NUM_ROWS_PER_SECTION = 5;
+const NUM_ROWS_PER_SECTION = 10;
 
 const dataBlobs = {};
 let sectionIDs = [];
@@ -38,11 +38,21 @@ class SellerList extends React.Component {
 
     }
 
+    static getInitialProps({ query }) {
+        return { query }
+    }
+
     async getData() {
         var bodyData = { 'seq': this.state.pageIndex, 'num': NUM_ROWS_PER_SECTION };
         console.log(bodyData);
         let that = this;
-        fetch(`http://localhost:8081/api/getSellers`, {
+        var url;
+        if (this.props.id === '1') {
+            url = 'http://localhost:8081/api/getSellersOrderBySales'
+        } else {
+            url = 'http://localhost:8081/api/getSellers'
+        }
+        fetch(url, {
             method: 'POST',
             body: JSON.stringify(bodyData),
             credentials: 'include',
@@ -81,7 +91,7 @@ class SellerList extends React.Component {
     }
 
     componentDidMount() {
-        const hei = document.documentElement.clientHeight - ReactDOM.findDOMNode(this.lv).parentNode.offsetTop - 50;
+        const hei = document.documentElement.clientHeight - ReactDOM.findDOMNode(this.lv).parentNode.offsetTop - 50 - 175 - 43.5 - 44;
         this.genData();
         this.setState({
             height: hei,
@@ -105,8 +115,6 @@ class SellerList extends React.Component {
     renderHeader() {
         return (
             <div>
-                <MyCarousel />
-                <div>商户列表</div>
             </div>
         )
     }
@@ -130,44 +138,44 @@ class SellerList extends React.Component {
             }
             const obj = this.state.data[index--];
             return (
-                // <div key={rowID} style={{ padding: '0 15px' }}>
-                // <Link href="/commodities/[val]" as={`/commodities/${obj.seller_uuid}`}>
-                //         <a>
-                //             <div
-                //                 style={{
-                //                     lineHeight: '50px',
-                //                     color: '#888',
-                //                     fontSize: 18,
-                //                     borderBottom: '1px solid #F6F6F6',
-                //                 }}
-                //             >{obj.seller_name}</div>
-                //             <div style={{ display: 'flex', padding: '15px 0' }}>
-                //                 <img style={{ height: '64px', marginRight: '15px' }} src={"http://localhost:8081/image/" + obj.img_name} alt="" />
-                //                 <div style={{ lineHeight: 1 }}>
-                //                     <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>{obj.seller_introduction}</div>
-                //                     {/* <div><span style={{ fontSize: '30px', color: '#FF6E27' }}>35</span>¥ </div> */}
-                //                 </div>
-                //             </div>
-
-                //         </a>
-                //     </Link>
-                // </div>
-                <div>
+                <div key={rowID} style={{ padding: '0 15px' }}>
                     <Link href="/commodities/[val]" as={`/commodities/${obj.seller_uuid}`}>
-                        <a style={{ width: "100%" }}>
-                            <Card>
-                                <Card.Header
-                                    title={obj.seller_name}
-                                    thumb={"http://localhost:8081/image/" + obj.img_name}
-                                    thumbStyle={{ width: 80, height: 80 }}
-                                />
-                                <Card.Body>
-                                    <div className="introduction-wrap">{obj.seller_introduction}</div>
-                                </Card.Body>
-                            </Card>
+                        <a>
+                            {/* <div
+                                style={{
+                                    lineHeight: '50px',
+                                    color: '#888',
+                                    fontSize: 18,
+                                    borderBottom: '1px solid #F6F6F6',
+                                }}
+                            >{obj.seller_name}</div> */}
+                            <div style={{ display: 'flex', padding: '15px 0' }}>
+                                <img style={{ width: '78px', height: '78px', marginRight: '15px', border: 'solid', borderWidth: 'thin', borderColor: '#C4C4C4' }} src={"http://localhost:8081/image/" + obj.img_name} alt="" />
+                                <div style={{ lineHeight: 1 }}>
+                                    <div style={{ marginBottom: '8px', fontWeight: 'normal', color: '#000000', fontSize: 24 }}>{obj.seller_name}</div>
+                                    <div style={{ color: '#4169E1' }}>销售量 <span style={{ fontSize: 15, color: '#FF6E27' }}>{obj.sales}</span></div>
+                                </div>
+                            </div>
+
                         </a>
                     </Link>
                 </div>
+                // <div>
+                //     <Link href="/commodities/[val]" as={`/commodities/${obj.seller_uuid}`}>
+                //         <a style={{ width: "100%" }}>
+                //             <Card>
+                //                 <Card.Header
+                //                     title={obj.seller_name}
+                //                     thumb={"http://localhost:8081/image/" + obj.img_name}
+                //                     thumbStyle={{ width: 80, height: 80 }}
+                //                 />
+                //                 <Card.Body>
+                //                     <div className="introduction-wrap">{obj.seller_introduction}</div>
+                //                 </Card.Body>
+                //             </Card>
+                //         </a>
+                //     </Link>
+                // </div>
             );
         };
 

@@ -1,10 +1,10 @@
 /* eslint no-dupe-keys: 0 */
-import { ListView, Button, Flex, NavBar, Icon, Modal } from 'antd-mobile';
+import { ListView, Button, Flex, NavBar, Icon, Modal, Card, WhiteSpace } from 'antd-mobile';
 import ReactDOM from 'react-dom';
 import '../../public/css/SellerList.css'
 import Router from 'next/router';
-
-const NUM_ROWS_PER_SECTION = 5;
+import '../../public/css/commodities.css'
+const NUM_ROWS_PER_SECTION = 10;
 
 const dataBlobs = {};
 let sectionIDs = [];
@@ -32,12 +32,31 @@ class CommoditiesList extends React.Component {
             cart: new Map(),
             sellerName: '',
             sellerImg: '',
-            sellerIntroduction: ''
+            sellerIntroduction: '',
+            visible: false
         };
         this.onCommodityNumChange = this.onCommodityNumChange.bind(this)
         this.onRightClick = this.onRightClick.bind(this)
         this.onLeftClick = this.onLeftClick.bind(this)
         this.newOrder = this.newOrder.bind(this)
+        this.onClose = this.onClose.bind(this)
+        this.showModal = this.showModal.bind(this)
+        this.renderHeader = this.renderHeader.bind(this)
+    }
+
+    onClose() {
+        this.setState({
+            visible: false
+        })
+    }
+
+    showModal(event) {
+        // this.setState({
+        //     visible: true
+        // })
+        var id = event.currentTarget.id || event.target.id
+        console.log(id)
+        alert('商品简介', id, [{ text: 'OK' }])
     }
 
     onCommodityNumChange(id, nums) {
@@ -79,16 +98,16 @@ class CommoditiesList extends React.Component {
 
     async newOrder() {
         var cartArray = [];
-        for(let[id, num] of this.state.cart) {
-            if(num !== 0) {
+        for (let [id, num] of this.state.cart) {
+            if (num !== 0) {
                 cartArray.push({
                     'commodityId': id,
                     'num': num
-                }) 
+                })
             }
         }
-        if(cartArray.length == 0) {
-            alert('提交订单失败', '您没有选中任何餐品', [{text: 'Ok'}]);
+        if (cartArray.length == 0) {
+            alert('提交订单失败', '您没有选中任何餐品', [{ text: 'Ok' }]);
             return;
         }
         var bodyData = {
@@ -97,19 +116,21 @@ class CommoditiesList extends React.Component {
         }
         fetch('http://localhost:8081/api/newOrder', {
             method: 'POST',
-            body:JSON.stringify(bodyData),
+            body: JSON.stringify(bodyData),
             credentials: 'include',
-            mode:'cors',
+            mode: 'cors',
             headers: {
-                'Content-Type' : 'application/json'
+                'Content-Type': 'application/json'
             }
-        }).then(() => {
-            alert('生成订单成功', '点击Ok返回主页已查看订单',[{text:'Ok', onPress: () => {Router.push('/error', '/')}}])
-        })
+        }).then((res) => res.json())
+            .then((result) => {
+                var url = '/orders/' + result.data.orderId
+                alert('生成订单成功', '点击Ok返回主页已查看订单', [{ text: 'Ok', onPress: () => { Router.push(url) } }])
+            })
     }
 
     async getSellerInfo() {
-        var bodyData = {'sellerUuid': this.props.query.id};
+        var bodyData = { 'sellerUuid': this.props.query.id };
         fetch('http://localhost:8081/api/getSellerInfo', {
             method: 'POST',
             body: JSON.stringify(bodyData),
@@ -117,13 +138,13 @@ class CommoditiesList extends React.Component {
                 "Content-Type": "application/json"
             }
         }).then((res) => res.json())
-        .then((result) => {
-            this.setState({
-                sellerName: result.data.sellerName,
-                sellerImg: result.data.sellerImg,
-                sellerIntroduction: result.data.sellerIntroduction
+            .then((result) => {
+                this.setState({
+                    sellerName: result.data.sellerName,
+                    sellerImg: result.data.sellerImg,
+                    sellerIntroduction: result.data.sellerIntroduction
+                })
             })
-        })
     }
 
     async getData() {
@@ -182,6 +203,8 @@ class CommoditiesList extends React.Component {
 
 
     onEndReached = (event) => {
+        console.log(this.state.pageIndex)
+        console.log(this.state.hasMore)
         if (this.state.isLoading && !this.state.hasMore) {
             return;
         }
@@ -196,7 +219,19 @@ class CommoditiesList extends React.Component {
 
     renderHeader() {
         return (
-            <div>
+            <div >
+                <Card>
+                    <Card.Header
+                        title={this.state.sellerName}
+                        thumb={"http://localhost:8081/image/" + this.state.sellerImg}
+                        thumbStyle={{ width: 80, height: 80 }}
+                    // extra={<span>数量：{val.num}</span>}
+                    />
+                    <Card.Body>
+                        <div className="introduction-wrap" >商家简介：{this.state.sellerIntroduction}</div>
+                    </Card.Body>
+                </Card>
+                <WhiteSpace/>
             </div>
         )
     }
@@ -223,34 +258,53 @@ class CommoditiesList extends React.Component {
             let commodity_id = obj.commodity_id;
             return (
                 <div key={rowID} style={{ padding: '0 15px' }}>
-                    <div
+                    {/* <div
                         style={{
                             lineHeight: '50px',
                             color: '#888',
                             fontSize: 18,
                             borderBottom: '1px solid #F6F6F6',
                         }}
-                    >{obj.commodity_name}</div>
+                    >{obj.commodity_name}</div> */}
                     <div style={{ display: 'flex', padding: '15px 0' }}>
-                        <img style={{ height: '64px', marginRight: '15px' }} src={"http://localhost:8081/image/" + obj.img_name} alt="" />
-                        <div style={{ lineHeight: 1 }}>
-                            <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>{obj.commodity_introduction}</div>
+                        <div id={obj.commodity_introduction} onClick={(e) => this.showModal(e)}>
+                            <img style={{ height: '64px', marginRight: '15px' }} src={"http://localhost:8081/image/" + obj.img_name} alt="" />
+                        </div>
+                        <div style={{ lineHeight: 1, width: '100%' }}>
+                            <div style={{ marginBottom: '8px', fontWeight: 'normal', color: '#000000', fontSize: 24 }}>{obj.commodity_name}</div>
+                            <div style={{ color: '#4169E1' }}>销售量 <span style={{ fontSize: 15, color: '#FF6E27' }}>{obj.sales}</span></div>
                             <div>
-                                <Flex align="center">
+                                <Flex type="wrap" align="center">
                                     <Flex.Item>
-                                        <div style={{ margin: "10px 10px 10px 10px" }}><span style={{ fontSize: '20px', color: '#FF6E27' }}>{obj.commodity_price}</span></div>
+                                        <div style={{ margin: "10px 10px 10px 10px" }}><span style={{ fontSize: '20px', color: '#FF6E27' }}>{obj.commodity_price}￥</span></div>
                                     </Flex.Item>
                                     <Flex.Item>
-                                        <button value={commodity_id} onClick={(e) => this.onLeftClick(e.target.value)}> - </button>
-                                    </Flex.Item>
-                                    <Flex.Item>
-                                        <span>{this.state.cart.get(commodity_id)}</span>
-                                    </Flex.Item>
-                                    <Flex.Item>
-                                        <button value={commodity_id} onClick={(e) => this.onRightClick(e.target.value)}> + </button>
+                                        <Flex>
+                                            <Flex.Item>
+                                                <div style={{ background: 'url("/image/minus.svg") center center /  21px 21px no-repeat', height: '21px', width: '21px' }} id={commodity_id} onClick={(e) => this.onLeftClick(e.target.id)}></div>
+                                            </Flex.Item>
+                                            <Flex.Item>
+                                                <span>{this.state.cart.get(commodity_id)}</span>
+                                            </Flex.Item>
+                                            <Flex.Item>
+                                                <div style={{ background: 'url("/image/plus.svg") center center /  21px 21px no-repeat', height: '21px', width: '21px' }} id={commodity_id} onClick={(e) => this.onRightClick(e.target.id)}></div>
+                                            </Flex.Item>
+                                        </Flex>
                                     </Flex.Item>
                                 </Flex>
                             </div>
+                            {/* <Modal
+                                visible={this.state.visible}
+                                transparent={true}
+                                maskClosable={false}
+                                title={obj.commodity_name}
+                                footer={[{ text: 'Ok', onPress: () => { this.onClose(); } }]}
+                                wrapProps={{ onTouchStart: this.onWrapTouchStart }}
+                            >
+                                <div style={{ height: 100, overflow: 'scroll' }}>
+                                    {obj.commodity_introduction}
+                                </div>
+                            </Modal> */}
                         </div>
                     </div>
                 </div>
@@ -266,7 +320,8 @@ class CommoditiesList extends React.Component {
                     rightContent={[
                         <Icon key="1" type="check" onClick={this.newOrder} />,
                     ]}
-                >{this.state.sellerName}</NavBar>
+                >点餐</NavBar>
+
                 <ListView
                     ref={el => this.lv = el}
                     dataSource={this.state.dataSource}

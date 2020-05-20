@@ -5,8 +5,17 @@ public class Seller {
     private String seller_name;
     private String seller_introduction;
     private String seller_uuid;
+    private int sales;
 
     public Seller() {}
+
+    public int getSales() {
+        return sales;
+    }
+
+    public void setSales(int sales) {
+        this.sales = sales;
+    }
 
     public String getSeller_uuid() {
         return seller_uuid;

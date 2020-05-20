@@ -35,7 +35,7 @@ class MyCarousel extends React.Component {
                                     onLoad={() => {
                                         // fire window resize event to change height
                                         window.dispatchEvent(new Event('resize'));
-                                        this.setState({ imgHeight: 'auto' });
+                                        // this.setState({ imgHeight: 'auto' });
                                     }}
                                 />
                         </a>

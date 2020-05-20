@@ -22,7 +22,7 @@ class OrderList extends React.Component {
             hasMore: true,
             dataSource,
             isLoading: true,
-            height: (document.documentElement.clientHeight * 3) / 4,
+            height: 0,
         };
     }
 

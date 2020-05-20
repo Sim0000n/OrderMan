@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-unfetch'
-import { Modal, Drawer, List, WhiteSpace, Button, NavBar, Icon, ImagePicker, TextareaItem, InputItem } from 'antd-mobile'
+import { Card, Modal, Drawer, List, WhiteSpace, Button, NavBar, Icon, ImagePicker, TextareaItem, InputItem } from 'antd-mobile'
 import MySideBar from '../../components/MySideBar'
 import Router from 'next/router'
 import CommodityList from '../../components/CommodityList'
@@ -68,10 +68,12 @@ class SellerHome extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            clear: true, 
+            clear: true,
             sellerId: '',
             sellerName: '',
-            loginStatus: '',
+            sellerImg: '',
+            sellerIntroduction: '',
+            loginStatus: -1,
             open: false,
             minHeight: 0,
             indexKey: 0,
@@ -92,6 +94,7 @@ class SellerHome extends React.Component {
 
             newSellerAvatar: [],
         }
+        this.logout = this.logout.bind(this)
         this.onOpenChange = this.onOpenChange.bind(this)
         this.onImageChange = this.onImageChange.bind(this)
         this.onNewSellerNameChange = this.onNewSellerNameChange.bind(this)
@@ -109,23 +112,25 @@ class SellerHome extends React.Component {
         this.onNewCommodityImgChange = this.onNewCommodityImgChange.bind(this)
         this.onNewSellerAvatarChange = this.onNewSellerAvatarChange.bind(this)
         this.changeSellerAvatar = this.changeSellerAvatar.bind(this)
-        this.logout = this.logout.bind(this)
     }
 
     async componentDidMount() {
         this.setState({ minHeight: document.documentElement.clientHeight })
-        const res = await fetch("http://localhost:8081/api/seller/login", {
+        fetch("http://localhost:8081/api/seller/login", {
             method: "GET",
             credentials: "include",
             mode: 'cors'
-        })
-        const json = await res.json();
-        console.log(json)
-        this.setState({
-            loginStatus: json.data.status,
-            sellerName: json.data.sellerName,
-            sellerId: json.data.sellerId
-        })
+        }).then((res) => res.json())
+            .then((result) => {
+                this.setState({
+                    loginStatus: result.data.status,
+                    sellerName: result.data.sellerName,
+                    sellerId: result.data.sellerUuid,
+                    sellerImg: result.data.sellerImg,
+                    sellerIntroduction: result.data.sellerIntroduction
+                })
+            })
+
     }
 
     async logout() {
@@ -133,8 +138,10 @@ class SellerHome extends React.Component {
             method: "GET",
             credentials: "include",
             mode: "cors"
-        }).then(console.log("logout"))
-            .then(() => this.setState({ loginStatus: 0 }))
+        }).then(() => {
+            console.log('logout')
+            this.setState({ loginStatus: 0 })
+        })
     }
 
     async addNewCommodity() {
@@ -167,7 +174,7 @@ class SellerHome extends React.Component {
             mode: "cors",
             body: formData,
             headers: {}
-        }).then(alert('修改头像', '头像修改成功', [{text:'Ok'}]))
+        }).then(alert('修改头像', '头像修改成功', [{ text: 'Ok' }]))
     }
 
     onNewSellerAvatarChange(v) {
@@ -244,7 +251,7 @@ class SellerHome extends React.Component {
             headers: {
                 "Content-Type": "application/json"
             }
-        })
+        }).then(() => Router.push('/seller'))
     }
 
     async changePassword() {
@@ -289,7 +296,7 @@ class SellerHome extends React.Component {
                 "Content-Type": "application/json"
             }
         }).then(() => {
-            alert('修改成功', '商户简介已修改', [{ text: 'Ok' }])
+            alert('修改成功', '商户简介已修改', [{ text: 'Ok', onPress: () => Router.push('/error', '/seller') }])
         })
     }
 
@@ -353,10 +360,22 @@ class SellerHome extends React.Component {
     }
 
 
-
     renderMySeller() {
-
         return (<div>
+            <div >
+                <Card>
+                    <Card.Header
+                        title={this.state.sellerName}
+                        thumb={"http://localhost:8081/image/" + this.state.sellerImg}
+                        thumbStyle={{ width: 80, height: 80 }}
+                    // extra={<span>数量：{val.num}</span>}
+                    />
+                    <Card.Body>
+                        <div className="introduction-wrap" >商家简介：{this.state.sellerIntroduction}</div>
+                    </Card.Body>
+                </Card>
+                <WhiteSpace />
+            </div>
             <List renderHeader={() => '我的商户头像(第一张为准)'}>
                 <List.Item>
                     <ImagePicker
@@ -407,11 +426,11 @@ class SellerHome extends React.Component {
                 >新密码</InputItem>
                 <Button onClick={this.changePassword}>修改登陆密码</Button>
             </List>
-        </div>)
+        </div >)
     }
 
     renderMyOrders() {
-        return(<div>
+        return (<div>
             <SellerOrderList />
         </div>)
     }
@@ -419,6 +438,8 @@ class SellerHome extends React.Component {
     renderHome() {
         if (this.state.loginStatus == 0) {
             return this.notLoginPage();
+        } else if (this.state.loginStatus == -1) {
+            return;
         }
         return (<div>
             <NavBar

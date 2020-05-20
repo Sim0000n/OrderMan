@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import pers.simon.orderman.model.entity.Cart;
 import pers.simon.orderman.model.request.*;
+import pers.simon.orderman.model.response.NewOrderResponse;
 import pers.simon.orderman.model.response.UserLoginResponse;
 import pers.simon.orderman.model.response.UserRegisterResponse;
 import pers.simon.orderman.service.UserService;
@@ -65,6 +66,12 @@ public class UserController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/getSellersOrderBySales")
+    ResponseWrapper getSellersOrderBySales(@RequestBody GetSellersRequest getSellersRequest) {
+        return new ResponseWrapper(OK, userService.getSellersOrderBySales(getSellersRequest));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @PostMapping("/api/getCommodities")
     ResponseWrapper getCommodities(@RequestBody GetCommoditesRequest getCommoditesRequest) {
         return new ResponseWrapper(OK, userService.getCommodities(getCommoditesRequest)) ;
@@ -78,8 +85,9 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @PostMapping("/api/newOrder")
-    void addNewOrder(@RequestBody NewOrderRequest newOrderRequest, HttpSession session) {
-        userService.addNewOrder(newOrderRequest, (String)session.getAttribute("userName"));
+    ResponseWrapper addNewOrder(@RequestBody NewOrderRequest newOrderRequest, HttpSession session) {
+        NewOrderResponse newOrderResponse = userService.addNewOrder(newOrderRequest, (String)session.getAttribute("userName"));
+        return new ResponseWrapper(OK, newOrderResponse);
     }
 
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")

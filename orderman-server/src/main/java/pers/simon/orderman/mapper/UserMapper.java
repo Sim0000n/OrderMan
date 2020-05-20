@@ -1,6 +1,7 @@
 package pers.simon.orderman.mapper;
 
 import org.apache.ibatis.annotations.*;
+import org.hibernate.validator.constraints.pl.PESEL;
 import org.springframework.stereotype.Component;
 import pers.simon.orderman.model.entity.Commodity;
 import pers.simon.orderman.model.entity.Order;
@@ -21,15 +22,19 @@ public interface UserMapper {
     @Select("INSERT INTO users(user_name, password)value(#{userName}, #{password})")
     String addNewUser(String userName, String password);
 
-    @Select("SELECT img_name, seller_name, seller_introduction, seller_uuid FROM sellers ORDER BY seq LIMIT #{low},#{high}")
+    @Select("SELECT sales, img_name, seller_name, seller_introduction, seller_uuid FROM sellers LIMIT #{low},#{high}")
     List<Seller> getSellers(int low, int high);
+
+    @Select("SELECT sales, img_name, seller_name, seller_introduction, seller_uuid FROM sellers ORDER BY sales LIMIT #{low},#{high}")
+    List<Seller> getSellersOrderBySales(int low, int high);
 
     @Select("SELECT COUNT(*) FROM sellers")
     int getSellersNums();
 
-    @Select("SELECT img_name, commodity_name, commodity_id, commodity_price, commodity_introduction FROM commodities " +
-            "WHERE seller_uuid=#{sellerUuid} LIMIT #{low}, #{high}")
+    @Select("SELECT commodities.sales, img_name, commodity_name, commodity_id, commodity_price, commodity_introduction FROM commodities " +
+            "WHERE seller_uuid=#{sellerUuid} ORDER BY commodities.sales LIMIT #{low}, #{high}")
     List<Commodity> getCommodities(String sellerUuid, int low, int high);
+
 
     @Results({
             @Result(property = "sellerName", column = "seller_name"),
@@ -63,7 +68,13 @@ public interface UserMapper {
     @Update(("UPDATE users SET password=#{password} WHERE user_name=#{userName}"))
     void changePassword(String userName, String password);
 
-    @Select("SELECT img_name, seller_name, seller_introduction, seller_uuid FROM sellers WHERE  `seller_name` REGEXP #{keyword} ORDER BY seq LIMIT #{low},#{high}")
+    @Select("SELECT sales, img_name, seller_name, seller_introduction, seller_uuid FROM sellers WHERE  `seller_name` REGEXP #{keyword} LIMIT #{low},#{high}")
     List<Seller> getSellersByKeyword(String keyword, int low, int high);
+
+    @Update("UPDATE sellers set sales=sales+'1' WHERE seller_uuid=#{sellerUuid}")
+    void addSellerSales(String sellerUuid);
+
+    @Update("UPDATE commodities set sales=sales+#{nums} WHERE commodity_id=#{commodityId}")
+    void addCommoditySales(String commodityId, int nums);
 
 }

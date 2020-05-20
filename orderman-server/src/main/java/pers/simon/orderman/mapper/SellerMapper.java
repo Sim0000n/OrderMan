@@ -1,11 +1,11 @@
 package pers.simon.orderman.mapper;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 import pers.simon.orderman.model.entity.Order;
+import pers.simon.orderman.model.response.GetCommodityInfoResponse;
+import pers.simon.orderman.model.response.GetSellerInfoResponse;
+import pers.simon.orderman.model.response.SellerLoginResponse;
 
 import java.util.List;
 
@@ -33,8 +33,8 @@ public interface SellerMapper {
     @Update("UPDATE sellers SET seller_introduction=#{introduction} WHERE seller_uuid=#{sellerUuid}")
     void changeIntroduction(String introduction, String sellerUuid);
 
-    @Insert("INSERT INTO commodities(commodity_id, img_name, commodity_name, commodity_introduction, commodity_price, seller_uuid) " +
-            "value (#{commodityId}, #{image}, #{commodityName}, #{commodityIntroduction}, #{commodityPrice}, #{sellerUuid})")
+    @Insert("INSERT INTO commodities(commodity_id, img_name, commodity_name, commodity_introduction, commodity_price, seller_uuid, sales) " +
+            "value (#{commodityId}, #{image}, #{commodityName}, #{commodityIntroduction}, #{commodityPrice}, #{sellerUuid}, 0)")
     void addNewCommodity(String commodityId, String image, String commodityName, String commodityIntroduction, float commodityPrice, String sellerUuid);
 
     @Update("UPDATE sellers SET img_name=#{newFileName} WHERE seller_uuid = #{sellerUuid}")
@@ -58,4 +58,15 @@ public interface SellerMapper {
 
     @Update("UPDATE orders SET order_status=#{orderStatus} WHERE order_id=#{orderId}")
     void changeOrderStatus(int orderStatus, String orderId);
+
+    @Results({
+            @Result(property = "sellerName", column = "seller_name"),
+            @Result(property = "sellerImg", column = "img_name"),
+            @Result(property = "sellerIntroduction", column = "seller_introduction")
+    })
+    @Select({"SELECT seller_name, seller_introduction, img_name FROM sellers WHERE seller_uuid=#{sellerUuid}"})
+    SellerLoginResponse getSellerInfo(String sellerUuid);
+
+    @Select("SELECT commodity_name, commodity_price, commodity_introduction, img_name FROM commodities WHERE commodity_id=#{commodityId}")
+    GetCommodityInfoResponse getCommodityInfo(String commodityId);
 }

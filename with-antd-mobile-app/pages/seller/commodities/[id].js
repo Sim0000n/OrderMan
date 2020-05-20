@@ -1,4 +1,4 @@
-import { WhiteSpace, Modal, ImagePicker, InputItem, TextareaItem, List, Button, NavBar, Icon } from 'antd-mobile'
+import { Card, WhiteSpace, Modal, ImagePicker, InputItem, TextareaItem, List, Button, NavBar, Icon } from 'antd-mobile'
 import Router from 'next/router';
 
 const alert = Modal.alert;
@@ -11,6 +11,10 @@ class EditCommodity extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            commodityImg: '',
+            commodityName: '',
+            commodityIntroduction: '',
+            commodityPrice: '',
             newCommodityImg: [],
             newCommodityName: '',
             newCommodityPrice: 1,
@@ -24,6 +28,34 @@ class EditCommodity extends React.Component {
         this.changeCommodityPrice = this.changeCommodityPrice.bind(this)
         this.changeCommodityName = this.changeCommodityName.bind(this)
         this.changeCommodityIntroduction = this.changeCommodityIntroduction.bind(this)
+        this.getCommodityInfo = this.getCommodityInfo.bind(this)
+    }
+
+    componentDidMount() {
+        this.getCommodityInfo()
+    }
+
+    async getCommodityInfo() {
+        var bodyData = {
+            'commodityId': this.props.query.id
+        }
+        fetch('http://localhost:8081/api/seller/getCommodityInfo', {
+            method: "POST",
+            credentials: "include",
+            mode: 'cors',
+            body: JSON.stringify(bodyData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((res) => res.json())
+            .then((result) => {
+                this.setState({
+                    'commodityName': result.data.commodity_name,
+                    'commodityImg': result.data.img_name,
+                    'commodityIntroduction': result.data.commodity_introduction,
+                    'commodityPrice': result.data.commodity_price
+                })
+            })
     }
 
     onNewCommodityImgChange(v) {
@@ -111,6 +143,18 @@ class EditCommodity extends React.Component {
             >
                 编辑餐品
             </NavBar>
+
+            <Card>
+                <Card.Header
+                    title={this.state.commodityName}
+                    thumb={"http://localhost:8081/image/" + this.state.commodityImg}
+                    thumbStyle={{ width: 80, height: 80 }}
+                    extra={<span>价格：{this.state.commodityPrice}</span>}
+                />
+                <Card.Body>
+                    <div className="introduction-wrap" >{this.state.commodityIntroduction}</div>
+                </Card.Body>
+            </Card>
             <List renderHeader={() => '商品图片(第一张为准）'}>
                 <List.Item>
                     <ImagePicker

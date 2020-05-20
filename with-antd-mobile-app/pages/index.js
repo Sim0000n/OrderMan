@@ -1,4 +1,4 @@
-import { TabBar, Button, WhiteSpace } from 'antd-mobile'
+import { Tabs, TabBar, Button, WhiteSpace } from 'antd-mobile'
 import Router from 'next/router'
 import fetch from 'isomorphic-unfetch'
 import MySearchBar from '../components/MySearchBar'
@@ -6,16 +6,28 @@ import '../public/css/index.css'
 import SellerList from '../components/SellerList'
 import OrderList from '../components/OrderList'
 import MyList from '../components/MyList'
+import MyCarousel from '../components/MyCarousel'
+
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+const tabs = [
+    { title: '默认排序', sub: '1' },
+    { title: '按销量排序', sub: '2' }
+]
 
 class Index extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedTab: "homeTab",
-            loginStatus: 0,
+            loginStatus: -1,
             userName: '请登录'
         };
     };
+
+
 
     async logout() {
         fetch(`http://localhost:8081/api/logout`, {
@@ -27,6 +39,7 @@ class Index extends React.Component {
                 loginStatus: 0
             }))
     }
+
     notLoginPage() {
         return (
             <div>
@@ -44,6 +57,8 @@ class Index extends React.Component {
     renderHome() {
         if (this.state.loginStatus == 0) {
             return this.notLoginPage();
+        } else if (this.state.loginStatus == -1) {
+            return;
         }
         return (
             <div>
@@ -53,9 +68,20 @@ class Index extends React.Component {
                     {/* <h1 className="orderman-slogan">OrderMan</h1> */}
                     <div>
                         <MySearchBar />
-                        {/* <MyCarousel /> */}
+                        <MyCarousel />
                     </div>
-                    <SellerList />
+                    <Tabs tabs={tabs}
+                        initialPage={0}
+                        onChange={(tab, index) => { console.log('onChange', index, tab); }}
+                        onTabClick={(tab, index) => { console.log('onTabClick', index, tab); }}
+                    >
+                        <div>
+                            <SellerList id='0'/>
+                        </div>
+                        <div>
+                            <SellerList id='1'/>
+                        </div>
+                    </Tabs>
                 </div>
             </div>
         );
@@ -84,29 +110,32 @@ class Index extends React.Component {
                 </div>
                 <MyList />
                 <div className="exit-button">
-                    <Button  type='warning' onClick={() => this.logout()}>退出登录</Button>
+                    <Button type='warning' onClick={() => this.logout()}>退出登录</Button>
                 </div>
             </div>
         )
     }
 
-    async componentDidMount() {
-        const res = await fetch("http://localhost:8081/api/login", {
+    async isLogin() {
+        fetch("http://localhost:8081/api/login", {
             method: "GET",
-            credentials: 'include',
-            mode: 'cors'
-        })
-        const json = await res.json()
-        console.log(json)
-        this.setState({
-            loginStatus: json.data.status,
-            userName: json.data.userName
-        })
-        console.log(this.state)
+            credentials: "include",
+            mode: "cors"
+        }).then((res) => res.json())
+            .then((result) => {
+                this.setState({
+                    loginStatus: result.data.status,
+                    userName: result.data.userName
+                })
+            })
+    }
 
+    componentDidMount() {
+        this.isLogin()
     }
 
     render() {
+        sleep(100000)
         return (
             <div style={{
                 position: "fixed",

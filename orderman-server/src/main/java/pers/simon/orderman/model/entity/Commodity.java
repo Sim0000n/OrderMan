@@ -6,9 +6,18 @@ public class Commodity {
     private String commodity_introduction;
     private String commodity_price;
     private String commodity_id;
+    private int sales;
     private int num;
 
     public Commodity() {}
+
+    public void setSales(int sales) {
+        this.sales = sales;
+    }
+
+    public int getSales() {
+        return sales;
+    }
 
     public int getNum() {
         return num;

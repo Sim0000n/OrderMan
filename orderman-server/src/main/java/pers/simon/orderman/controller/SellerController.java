@@ -42,9 +42,8 @@ public class SellerController {
         Object sellerUuid = session.getAttribute("sellerUuid");
         SellerLoginResponse sellerLoginResponse = new SellerLoginResponse();
         if(sellerUuid != null) {
+            sellerLoginResponse = sellerService.getSellerInfo((String)sellerUuid);
             sellerLoginResponse.setStatus(1);
-            sellerLoginResponse.setSellerUuid((String)sellerUuid);
-            sellerLoginResponse.setSellerName(sellerService.getSellerUuidById((String)sellerUuid));
         } else {
             sellerLoginResponse.setStatus(0);
         }
@@ -167,5 +166,11 @@ public class SellerController {
     @PostMapping("/api/seller/changeOrderStatus")
     void changeOrderStatus(@RequestBody ChangeOrderStatusRequest changeOrderStatusRequest) {
         sellerService.changeOrderStatus(changeOrderStatusRequest);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    @PostMapping("/api/seller/getCommodityInfo")
+    ResponseWrapper getCommodityInfo(@RequestBody GetCommodityInfoRequest getCommodityInfoRequest) {
+        return new ResponseWrapper(OK, sellerService.getCommodityInfo(getCommodityInfoRequest.getCommodityId()));
     }
 }

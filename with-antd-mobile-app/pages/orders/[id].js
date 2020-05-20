@@ -76,6 +76,42 @@ class Order extends React.Component {
         }
     }
 
+    pay() {
+        var bodyData = {
+            'orderId': this.state.order.order_id,
+            'orderStatus': '2',
+        }
+        fetch('http://localhost:8081/api/seller/changeOrderStatus', {
+            method: 'POST',
+            credentials: 'include',
+            mode: 'cors',
+            body: JSON.stringify(bodyData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(alert('付款', '已付款', [{ text: 'Ok' }]))
+            .then(() => {
+                var url = '/orders/' + this.state.order.order_id
+                Router.push(url)
+            })
+    }
+
+    renderButton() {
+        if (this.state.order.order_status == '1') {
+            return (<div>
+                <Button style={{ margin: 10 }} type="primary" onClick={() => alert('付款', '点击确认去付款', [{ text: 'OK', onPress: () => this.pay() }, { text: 'Cancel' }])}>
+                    去付款
+                </Button>
+            </div>)
+        } else if (this.state.order.order_status == '2') {
+            return (<div>
+
+            </div>)
+        } else {
+            return;
+        }
+    }
+
     render() {
         return (<div>
             <NavBar
@@ -116,6 +152,7 @@ class Order extends React.Component {
                     </List.Item>
                 ))}
             </List>
+            {this.renderButton()}
         </div>)
     }
 
